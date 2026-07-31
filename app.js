@@ -9,7 +9,7 @@ const portraitStyles = {
     skin: "#8a563c",
     hair: "#25130f",
     shirt: "#ef8e77",
-    accent: "#0d71ba",
+    accent: "#1282ca",
     hairStyle: "curls",
     glasses: false,
     badge: "heart",
@@ -36,7 +36,7 @@ const portraitStyles = {
     skin: "#704529",
     hair: "#171313",
     shirt: "#ffcb66",
-    accent: "#0d71ba",
+    accent: "#1282ca",
     hairStyle: "high",
     glasses: false,
     badge: "spark",
@@ -72,7 +72,7 @@ const portraitStyles = {
     skin: "#9b5e40",
     hair: "#241611",
     shirt: "#b8dc8a",
-    accent: "#0d71ba",
+    accent: "#1282ca",
     hairStyle: "bun",
     glasses: false,
     badge: "speech",
@@ -316,6 +316,54 @@ const archetypes = {
   },
 };
 
+
+const growthSkillPrompts = {
+  collaboration: "Invite a teammate into a decision earlier than usual.",
+  givingFeedback: "Offer one specific observation, its impact, and one useful next step.",
+  receivingFeedback: "Ask for one piece of feedback before the work feels finished.",
+  humbleHustle: "Take ownership of one useful task that sits outside the spotlight.",
+  empathy: "Pause to ask whose experience has not shaped the work yet.",
+  adaptability: "Name what changed, what still holds, and what you will adjust.",
+  proactiveProblemSolving: "Turn one recurring frustration into a small experiment.",
+  resilience: "After a setback, capture the lesson and define the smallest next move.",
+  clearCommunication: "Reduce one complex idea to a sentence and a simple visual.",
+  creativity: "Generate three deliberately different options before refining one.",
+  ambiguity: "State what is known, unknown, and safe to test next.",
+  ownership: "Clarify the owner, deadline, and definition of done.",
+  socialAwareness: "Notice who has not spoken and create a lower-risk way to contribute.",
+};
+
+const modeGrowthSkills = {
+  explore: ["empathy", "socialAwareness", "receivingFeedback"],
+  interpret: ["clearCommunication", "ambiguity", "receivingFeedback"],
+  imagine: ["creativity", "adaptability", "resilience"],
+  make: ["proactiveProblemSolving", "ownership", "humbleHustle"],
+  validate: ["givingFeedback", "receivingFeedback", "resilience"],
+  align: ["collaboration", "socialAwareness", "clearCommunication"],
+};
+
+const modeArchetypeOptions = {
+  explore: ["empathizer", "researcher", "synthesizer", "ideaGenerator"],
+  interpret: ["synthesizer", "documenter", "tester", "facilitator"],
+  imagine: ["ideaGenerator", "artist", "prototyper"],
+  make: ["prototyper", "artist", "leader"],
+  validate: ["tester", "researcher", "documenter"],
+  align: ["facilitator", "leader", "empathizer"],
+};
+
+const counterbalanceMap = {
+  empathizer: ["tester", "leader", "documenter"],
+  researcher: ["ideaGenerator", "prototyper", "facilitator"],
+  synthesizer: ["prototyper", "tester", "leader"],
+  ideaGenerator: ["tester", "documenter", "facilitator"],
+  prototyper: ["researcher", "tester", "facilitator"],
+  artist: ["researcher", "tester", "leader"],
+  tester: ["ideaGenerator", "empathizer", "prototyper"],
+  facilitator: ["leader", "tester", "ideaGenerator"],
+  leader: ["empathizer", "researcher", "facilitator"],
+  documenter: ["ideaGenerator", "leader", "artist"],
+};
+
 const questions = [
   {
     stem: "My attention goes first to...",
@@ -545,7 +593,10 @@ const state = {
   answers: [],
   result: null,
   selectedSkills: [],
+  growthSkills: [],
+  editingAnswers: false,
   name: "",
+  introText: "",
 };
 
 brandButton.addEventListener("click", () => {
@@ -586,7 +637,7 @@ function renderIntro() {
     <section class="screen intro-layout" aria-labelledby="introTitle">
       <div>
         <p class="eyebrow">A tiny quiz about your working instincts</p>
-        <h1 class="hero-title" id="introTitle">How do you <span>show up?</span></h1>
+        <h1 class="hero-title" id="introTitle">How do you<br><span>show up?</span></h1>
         <p class="hero-copy">
           Choose between ten pairs to reveal the beliefs, tendencies, and practices you naturally bring to a team.
         </p>
@@ -617,6 +668,10 @@ function startAssessment() {
   state.currentQuestion = 0;
   state.answers = [];
   state.result = null;
+  state.selectedSkills = [];
+  state.growthSkills = [];
+  state.editingAnswers = false;
+  state.introText = "";
   render();
   announce("Assessment started. Question 1 of 10.");
 }
@@ -624,9 +679,17 @@ function startAssessment() {
 function renderQuiz() {
   const question = questions[state.currentQuestion];
   const number = state.currentQuestion + 1;
-  const progress = (state.currentQuestion / questions.length) * 100;
-  const timeText =
-    number <= 3 ? "About a minute left" : number <= 7 ? "Less than a minute left" : number === 10 ? "Final choice" : "Almost there";
+  const progress = (number / questions.length) * 100;
+  const selectedIndex = state.answers[state.currentQuestion];
+  const timeText = state.editingAnswers
+    ? "Reviewing your answers"
+    : number <= 3
+      ? "About a minute left"
+      : number <= 7
+        ? "Less than a minute left"
+        : number === 10
+          ? "Final choice"
+          : "Almost there";
 
   app.innerHTML = `
     <section class="screen quiz-card" aria-labelledby="questionTitle">
@@ -637,6 +700,11 @@ function renderQuiz() {
       <div class="progress-track" aria-label="Assessment progress">
         <div class="progress-fill" style="width: ${progress}%"></div>
       </div>
+      ${
+        state.editingAnswers
+          ? '<div class="edit-banner"><strong>Edit mode:</strong> Your current answer is highlighted. Change it or continue to the next choice.</div>'
+          : ""
+      }
       <p class="question-kicker">${question.kicker}</p>
       <h2 class="question-title" id="questionTitle">${question.stem}</h2>
       <p class="question-help">Go with the option that feels more automatic, especially when nobody assigns you the role.</p>
@@ -645,27 +713,42 @@ function renderQuiz() {
           .map(
             (option, index) => `
           <button
-            class="choice-card"
+            class="choice-card ${selectedIndex === index ? "is-selected" : ""}"
             type="button"
             data-option-index="${index}"
             style="--choice-color: ${option.color}; --tilt: ${index === 0 ? "-0.4deg" : "0.4deg"}"
             aria-label="Choose ${option.word}"
+            aria-pressed="${selectedIndex === index}"
           >
             <span class="choice-shortcut" aria-hidden="true">${index === 0 ? "A" : "B"}</span>
             <span class="choice-symbol" aria-hidden="true">${option.symbol}</span>
             <span class="choice-word">${option.word}</span>
+            ${selectedIndex === index ? '<span class="choice-selected-label">Your choice</span>' : ""}
           </button>
         `,
           )
           .join("")}
       </div>
       <div class="quiz-actions">
+        <div class="quiz-nav">
+          ${
+            state.currentQuestion > 0
+              ? '<button class="ghost-button" id="backButton" type="button">← Previous</button>'
+              : ""
+          }
+          ${
+            state.editingAnswers && selectedIndex !== undefined
+              ? `<button class="secondary-button" id="nextButton" type="button">${
+                  state.currentQuestion === questions.length - 1 ? "Update result" : "Next choice →"
+                }</button>`
+              : ""
+          }
+        </div>
         ${
-          state.currentQuestion > 0
-            ? '<button class="ghost-button" id="backButton" type="button">← Previous</button>'
-            : "<span></span>"
+          state.editingAnswers
+            ? '<button class="ghost-button" id="saveAndReturnButton" type="button">Save and return to results</button>'
+            : '<p class="microcopy">Use ← / → or A / B</p>'
         }
-        <p class="microcopy">Use ← / → or A / B</p>
       </div>
     </section>
   `;
@@ -676,11 +759,23 @@ function renderQuiz() {
 
   const backButton = document.querySelector("#backButton");
   if (backButton) backButton.addEventListener("click", previousQuestion);
+
+  const nextButton = document.querySelector("#nextButton");
+  if (nextButton) nextButton.addEventListener("click", nextQuestion);
+
+  const saveAndReturnButton = document.querySelector("#saveAndReturnButton");
+  if (saveAndReturnButton) saveAndReturnButton.addEventListener("click", finishEditingAnswers);
 }
 
 function selectOption(optionIndex) {
   if (state.screen !== "quiz") return;
   state.answers[state.currentQuestion] = optionIndex;
+
+  if (state.editingAnswers) {
+    render();
+    announce(`${questions[state.currentQuestion].options[optionIndex].word} selected.`);
+    return;
+  }
 
   if (state.currentQuestion < questions.length - 1) {
     state.currentQuestion += 1;
@@ -691,6 +786,8 @@ function selectOption(optionIndex) {
 
   state.result = calculateResult();
   state.selectedSkills = [...state.result.suggestedSkills];
+  state.growthSkills = getSuggestedGrowthSkills(state.result, state.selectedSkills);
+  state.introText = state.result.primary.intro;
   state.screen = "reveal";
   render();
   announce("All choices complete. Calculating your result.");
@@ -708,6 +805,48 @@ function previousQuestion() {
   state.currentQuestion -= 1;
   render();
   announce(`Returned to question ${state.currentQuestion + 1}.`);
+}
+
+function nextQuestion() {
+  if (state.answers[state.currentQuestion] === undefined) {
+    announce("Choose an option before continuing.");
+    return;
+  }
+
+  if (state.currentQuestion < questions.length - 1) {
+    state.currentQuestion += 1;
+    render();
+    announce(`Question ${state.currentQuestion + 1} of ${questions.length}.`);
+    return;
+  }
+
+  finishEditingAnswers();
+}
+
+function editAnswers() {
+  state.editingAnswers = true;
+  state.screen = "quiz";
+  state.currentQuestion = 0;
+  render();
+  announce("Reviewing your answers. Your current choice is highlighted.");
+}
+
+function finishEditingAnswers() {
+  const previousSuggestions = state.result?.suggestedSkills || [];
+  const wasUsingSuggestions = arraysHaveSameItems(state.selectedSkills, previousSuggestions);
+
+  state.result = calculateResult();
+
+  if (wasUsingSuggestions || state.selectedSkills.length === 0) {
+    state.selectedSkills = [...state.result.suggestedSkills];
+  }
+
+  state.growthSkills = getSuggestedGrowthSkills(state.result, state.selectedSkills);
+  state.introText = state.result.primary.intro;
+  state.editingAnswers = false;
+  state.screen = "results";
+  render();
+  announce("Your updated result is ready.");
 }
 
 function calculateResult() {
@@ -750,6 +889,7 @@ function calculateResult() {
   const [first, second, third] = rankedArchetypes;
   return {
     archetypeScores,
+    skillScores,
     modeScores: normalizedModes,
     primaryKey: first[0],
     primary: archetypes[first[0]],
@@ -759,6 +899,123 @@ function calculateResult() {
     suggestedSkills,
     stretchMode: Object.entries(normalizedModes).sort((a, b) => a[1] - b[1])[0][0],
   };
+}
+
+function arraysHaveSameItems(first = [], second = []) {
+  if (first.length !== second.length) return false;
+  const a = [...first].sort();
+  const b = [...second].sort();
+  return a.every((item, index) => item === b[index]);
+}
+
+function getSuggestedGrowthSkills(result, excludedSkills = []) {
+  const excluded = new Set(excludedSkills);
+  const rankedLowSignals = Object.entries(result.skillScores || {})
+    .sort((a, b) => a[1] - b[1])
+    .map(([skill]) => skill);
+
+  const candidates = [
+    ...(modeGrowthSkills[result.stretchMode] || []),
+    ...rankedLowSignals,
+    ...Object.keys(skillLabels),
+  ];
+
+  const suggestions = [];
+  candidates.forEach((skill) => {
+    if (suggestions.length >= 2) return;
+    if (!suggestions.includes(skill) && !excluded.has(skill)) suggestions.push(skill);
+  });
+
+  if (suggestions.length < 2) {
+    candidates.forEach((skill) => {
+      if (suggestions.length >= 2) return;
+      if (!suggestions.includes(skill)) suggestions.push(skill);
+    });
+  }
+
+  return suggestions;
+}
+
+function getBalancedCrew(result) {
+  const chosen = new Set([result.primaryKey]);
+  const crew = [
+    {
+      key: result.primaryKey,
+      label: "Your natural anchor",
+      reason: `${result.primary.playful} brings ${result.primary.modes.map((mode) => modeMeta[mode].label).join(" and ")} energy to the crew.`,
+    },
+  ];
+
+  const pickFirstAvailable = (candidates) => candidates.find((key) => !chosen.has(key));
+
+  const stretchKey = pickFirstAvailable(modeArchetypeOptions[result.stretchMode] || []);
+  if (stretchKey) {
+    chosen.add(stretchKey);
+    crew.push({
+      key: stretchKey,
+      label: `Activate more ${modeMeta[result.stretchMode].label}`,
+      reason: `${archetypes[stretchKey].playful} adds energy in your lightest contribution mode and helps the team avoid leaning only on your default style.`,
+    });
+  }
+
+  const counterKey = pickFirstAvailable(counterbalanceMap[result.primaryKey] || []);
+  if (counterKey) {
+    chosen.add(counterKey);
+    crew.push({
+      key: counterKey,
+      label: "Create a productive counterweight",
+      reason: `${archetypes[counterKey].playful} introduces a different instinct that can question, focus, or ground the direction without canceling your strengths.`,
+    });
+  }
+
+  const coveredModes = new Set();
+  chosen.forEach((key) => archetypes[key].modes.forEach((mode) => coveredModes.add(mode)));
+
+  const finalKey = Object.keys(archetypes)
+    .filter((key) => !chosen.has(key))
+    .sort((a, b) => {
+      const aNew = archetypes[a].modes.filter((mode) => !coveredModes.has(mode)).length;
+      const bNew = archetypes[b].modes.filter((mode) => !coveredModes.has(mode)).length;
+      if (bNew !== aNew) return bNew - aNew;
+      const bridgePriority = ["facilitator", "synthesizer", "empathizer", "documenter"];
+      return bridgePriority.indexOf(a) - bridgePriority.indexOf(b);
+    })[0];
+
+  if (finalKey) {
+    crew.push({
+      key: finalKey,
+      label: "Round out the project cycle",
+      reason: `${archetypes[finalKey].playful} adds ${archetypes[finalKey].modes.map((mode) => modeMeta[mode].label).join(" and ")} coverage so the crew can move from understanding to action with fewer blind spots.`,
+    });
+  }
+
+  return crew;
+}
+
+function renderArchetypeLibrary(currentKey) {
+  return Object.entries(archetypes)
+    .map(
+      ([key, item]) => `
+        <details class="archetype-card ${key === currentKey ? "is-current" : ""}">
+          <summary>
+            <span class="archetype-swatch" style="--swatch-color:${item.color}" aria-hidden="true">${item.glyph}</span>
+            <span class="archetype-summary-copy">
+              <small>${stripLeadingThe(item.official)}</small>
+              <strong>${item.playful}</strong>
+            </span>
+            <span class="archetype-expand" aria-hidden="true">+</span>
+          </summary>
+          <div class="archetype-detail">
+            <p>${item.description}</p>
+            <div class="mode-chip-row">
+              ${item.modes.map((mode) => `<span class="mode-chip">${modeMeta[mode].label}</span>`).join("")}
+            </div>
+            <p><strong>Bring them in when:</strong> ${item.callWhen[0]}.</p>
+          </div>
+        </details>
+      `,
+    )
+    .join("");
 }
 
 function renderReveal() {
@@ -977,6 +1234,7 @@ function renderResults() {
   const energyLine = result.isBlend
     ? `With strong ${supportNames[0]} energy`
     : `A clear ${stripLeadingThe(primary.official)} signal`;
+  const balancedCrew = getBalancedCrew(result);
 
   app.innerHTML = `
     <section class="screen results-layout" aria-labelledby="resultTitle">
@@ -991,6 +1249,9 @@ function renderResults() {
             ${result.supporting
               .map((item) => `<span class="chip">${stripLeadingThe(item.playful)}</span>`)
               .join("")}
+          </div>
+          <div class="result-actions compact">
+            <button class="secondary-button" id="editAnswersButton" type="button">Edit my answers</button>
           </div>
         </div>
         <div class="result-portrait">
@@ -1031,6 +1292,58 @@ function renderResults() {
         </article>
 
         <article class="panel wide">
+          <h3>A balanced crew around your style</h3>
+          <p>
+            Good team composition does not mean collecting four people who think alike. It means pairing your natural contribution with people who cover lighter modes, create useful tension, and help the work move across the full project cycle.
+          </p>
+          <div class="crew-grid">
+            ${balancedCrew
+              .map((member, index) => {
+                const item = archetypes[member.key];
+                return `
+                  <article class="crew-card ${member.key === result.primaryKey ? "is-you" : ""}" style="--crew-color:${item.color}">
+                    <span class="crew-number">${String(index + 1).padStart(2, "0")}</span>
+                    <p class="crew-label">${member.label}</p>
+                    <h4>${item.playful}</h4>
+                    <p class="crew-role">${stripLeadingThe(item.official)}</p>
+                    <div class="mode-chip-row">
+                      ${item.modes.map((mode) => `<span class="mode-chip">${modeMeta[mode].label}</span>`).join("")}
+                    </div>
+                    <p>${member.reason}</p>
+                  </article>
+                `;
+              })
+              .join("")}
+          </div>
+          <p class="composition-note">Use this as a conversation starter when forming a team, not as a staffing rule or a claim that one person can only play one role.</p>
+        </article>
+
+        <article class="panel wide growth-panel">
+          <h3>Choose two areas to grow</h3>
+          <p>
+            Your lighter signals are not weaknesses. Choose up to two power skills you want to practice more intentionally in your next project.
+          </p>
+          <div class="skill-picker" id="growthSkillPicker">
+            ${Object.entries(skillLabels)
+              .map(
+                ([key, label]) => `
+                <button
+                  class="skill-toggle growth-toggle"
+                  type="button"
+                  data-growth-skill="${key}"
+                  aria-pressed="${state.growthSkills.includes(key)}"
+                >${label}</button>
+              `,
+              )
+              .join("")}
+          </div>
+          <p class="skill-count" id="growthSkillCount">${state.growthSkills.length} of 2 selected</p>
+          <div class="growth-practice-grid" id="growthPracticeGrid">
+            ${renderGrowthPractices()}
+          </div>
+        </article>
+
+        <article class="panel wide">
           <h3>What should teammates rely on you for?</h3>
           <p>
             We suggested three power skills from your choices. Keep them or select the three you most want to bring to the team.
@@ -1053,6 +1366,16 @@ function renderResults() {
         </article>
 
         <article class="panel wide">
+          <h3>Explore all archetypes</h3>
+          <p>
+            Your result is a strongest signal, not a box. Open any archetype below to understand the other ways people may contribute and where each style can help a team.
+          </p>
+          <div class="archetype-library">
+            ${renderArchetypeLibrary(result.primaryKey)}
+          </div>
+        </article>
+
+        <article class="panel wide">
           <h3>Your team introduction</h3>
           <div class="profile-builder">
             <div class="field">
@@ -1061,13 +1384,14 @@ function renderResults() {
             </div>
             <div class="field">
               <label for="introText">Edit this before sharing</label>
-              <textarea id="introText">${escapeHtml(primary.intro)}</textarea>
+              <textarea id="introText">${escapeHtml(state.introText || primary.intro)}</textarea>
             </div>
           </div>
           <div class="result-actions">
             <button class="primary-button" id="copyButton" type="button">Copy introduction</button>
             <button class="secondary-button" id="downloadButton" type="button">Download result card</button>
-            <button class="ghost-button" id="retakeButton" type="button">Retake</button>
+            <button class="ghost-button" id="editAnswersBottomButton" type="button">Edit answers</button>
+            <button class="ghost-button" id="retakeButton" type="button">Start over</button>
           </div>
         </article>
 
@@ -1079,6 +1403,24 @@ function renderResults() {
   `;
 
   bindResultInteractions();
+}
+
+function renderGrowthPractices() {
+  if (!state.growthSkills.length) {
+    return '<p class="growth-empty">Choose one or two skills to see a small practice you can try.</p>';
+  }
+
+  return state.growthSkills
+    .map(
+      (skill) => `
+        <article class="growth-practice-card">
+          <span>Practice</span>
+          <h4>${skillLabels[skill]}</h4>
+          <p>${growthSkillPrompts[skill]}</p>
+        </article>
+      `,
+    )
+    .join("");
 }
 
 function bindResultInteractions() {
@@ -1101,17 +1443,43 @@ function bindResultInteractions() {
     });
   });
 
+  document.querySelectorAll("[data-growth-skill]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const skill = button.dataset.growthSkill;
+      const selected = state.growthSkills.includes(skill);
+
+      if (selected) {
+        state.growthSkills = state.growthSkills.filter((item) => item !== skill);
+      } else if (state.growthSkills.length < 2) {
+        state.growthSkills.push(skill);
+      } else {
+        announce("Choose up to two growth skills. Remove one before adding another.");
+        return;
+      }
+
+      button.setAttribute("aria-pressed", String(!selected));
+      document.querySelector("#growthSkillCount").textContent = `${state.growthSkills.length} of 2 selected`;
+      document.querySelector("#growthPracticeGrid").innerHTML = renderGrowthPractices();
+    });
+  });
+
   document.querySelector("#nameInput").addEventListener("input", (event) => {
     state.name = event.target.value;
   });
 
+  document.querySelector("#introText").addEventListener("input", (event) => {
+    state.introText = event.target.value;
+  });
+
   document.querySelector("#copyButton").addEventListener("click", copyIntroduction);
   document.querySelector("#downloadButton").addEventListener("click", downloadResultCard);
+  document.querySelector("#editAnswersButton").addEventListener("click", editAnswers);
+  document.querySelector("#editAnswersBottomButton").addEventListener("click", editAnswers);
   document.querySelector("#retakeButton").addEventListener("click", resetAssessment);
 }
 
 async function copyIntroduction() {
-  const text = document.querySelector("#introText").value.trim();
+  const text = (state.introText || document.querySelector("#introText").value).trim();
   const prefix = state.name.trim() ? `${state.name.trim()}: ` : "";
   try {
     await navigator.clipboard.writeText(prefix + text);
@@ -1129,62 +1497,252 @@ async function copyIntroduction() {
 
 function downloadResultCard() {
   const canvas = document.createElement("canvas");
-  canvas.width = 1400;
-  canvas.height = 900;
+  canvas.width = 1200;
+  canvas.height = 1200;
+
   const ctx = canvas.getContext("2d");
   const result = state.result;
   const primary = result.primary;
+  const supportingType = stripLeadingThe(result.supporting[0].playful);
+  const topModes = Object.entries(result.modeScores)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3);
+  const selectedLabels = state.selectedSkills
+    .map((skill) => skillLabels[skill])
+    .slice(0, 3);
+  const shareLine = (state.introText || primary.intro).split(" Bring me in")[0];
 
   ctx.fillStyle = "#f7f3eb";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  roundedRect(ctx, 70, 70, 1260, 760, 42);
-  ctx.fillStyle = primary.color;
+  const blueGlow = ctx.createRadialGradient(1100, 70, 10, 1100, 70, 430);
+  blueGlow.addColorStop(0, "rgba(18, 130, 202, 0.22)");
+  blueGlow.addColorStop(1, "rgba(18, 130, 202, 0)");
+  ctx.fillStyle = blueGlow;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.save();
+  ctx.shadowColor = "rgba(23, 21, 31, 0.16)";
+  ctx.shadowBlur = 32;
+  ctx.shadowOffsetY = 14;
+  roundedRect(ctx, 55, 55, 1090, 1090, 48);
+  ctx.fillStyle = "#fffdf8";
   ctx.fill();
-  ctx.lineWidth = 6;
+  ctx.restore();
+
+  roundedRect(ctx, 55, 55, 1090, 1090, 48);
+  ctx.lineWidth = 5;
   ctx.strokeStyle = "#17151f";
   ctx.stroke();
 
+  // Header
+  roundedRect(ctx, 98, 92, 48, 48, 8);
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = "#17151f";
+  ctx.stroke();
   ctx.fillStyle = "#17151f";
-  ctx.font = "700 28px system-ui, sans-serif";
-  ctx.fillText("CREATIVITY ARCHETYPE | TANG ONBOARDING", 125, 145);
+  ctx.font = "900 34px system-ui, sans-serif";
+  ctx.fillText("T", 110, 129);
+  ctx.font = "800 23px system-ui, sans-serif";
+  ctx.fillText("TANG ONBOARDING", 164, 124);
+  ctx.textAlign = "right";
+  ctx.fillStyle = "#65616f";
+  ctx.font = "700 21px system-ui, sans-serif";
+  ctx.fillText("TANG ONBOARDING", 1098, 124);
+  ctx.textAlign = "left";
 
-  ctx.font = "700 84px Georgia, serif";
-  wrapText(ctx, primary.playful, 125, 270, 790, 92);
+  // Left content column. Nothing from the portrait is allowed into this zone.
+  const leftX = 105;
+  const leftWidth = 560;
 
-  ctx.font = "700 32px system-ui, sans-serif";
-  ctx.fillText(primary.official, 125, 430);
+  ctx.fillStyle = "#65616f";
+  ctx.font = "800 19px system-ui, sans-serif";
+  ctx.fillText("YOUR CREATIVITY ARCHETYPE", leftX, 218);
 
-  ctx.font = "400 29px system-ui, sans-serif";
-  wrapText(ctx, primary.description, 125, 500, 800, 42);
+  ctx.fillStyle = "#17151f";
+  ctx.font = fitCanvasFont(ctx, primary.playful, leftWidth, 82, 54, "Georgia, serif", 800);
+  const titleBottom = wrapTextWithLimit(ctx, primary.playful, leftX, 308, leftWidth, 76, 2);
 
-  drawHumanPortrait(ctx, result.primaryKey, 970, 155, 285, 300);
+  const roleY = Math.max(430, titleBottom + 36);
+  ctx.fillStyle = primary.color;
+  roundedRect(ctx, leftX, roleY, 250, 50, 25);
+  ctx.fill();
+  ctx.fillStyle = "#17151f";
+  ctx.font = "800 20px system-ui, sans-serif";
+  ctx.fillText(stripLeadingThe(primary.official).toUpperCase(), leftX + 23, roleY + 33);
 
-  ctx.font = "700 24px system-ui, sans-serif";
-  ctx.fillText("TOP MODES", 960, 480);
-  const topModes = Object.entries(result.modeScores).sort((a, b) => b[1] - a[1]).slice(0, 3);
+  ctx.fillStyle = "#17151f";
+  ctx.font = "500 28px system-ui, sans-serif";
+  const descriptionBottom = wrapTextWithLimit(ctx, shareLine, leftX, roleY + 112, leftWidth, 42, 4);
+
+  const supportY = Math.max(735, descriptionBottom + 46);
+  ctx.fillStyle = "#65616f";
+  ctx.font = "800 18px system-ui, sans-serif";
+  ctx.fillText("ALSO SHOWING", leftX, supportY);
+  roundedRect(ctx, leftX, supportY + 25, 430, 56, 28);
+  ctx.fillStyle = "#edf6fb";
+  ctx.fill();
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = "#1282ca";
+  ctx.stroke();
+  ctx.fillStyle = "#17151f";
+  ctx.font = "700 22px system-ui, sans-serif";
+  ctx.fillText(`${supportingType} energy`, leftX + 25, supportY + 61);
+
+  // Right art column. The portrait is clipped inside its own dedicated card.
+  const artX = 755;
+  const artY = 190;
+  const artWidth = 330;
+  const artHeight = 340;
+
+  roundedRect(ctx, artX, artY, artWidth, artHeight, 54);
+  const artGradient = ctx.createLinearGradient(artX, artY, artX, artY + artHeight);
+  artGradient.addColorStop(0, "#fffaf0");
+  artGradient.addColorStop(1, `${primary.color}77`);
+  ctx.fillStyle = artGradient;
+  ctx.fill();
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = "#17151f";
+  ctx.stroke();
+
+  ctx.save();
+  roundedRect(ctx, artX + 10, artY + 10, artWidth - 20, artHeight - 20, 46);
+  ctx.clip();
+  drawHumanPortrait(ctx, result.primaryKey, artX + 28, artY + 24, artWidth - 56, artHeight - 48);
+  ctx.restore();
+
+  // Modes are placed below the art with a fixed gap.
+  ctx.fillStyle = "#65616f";
+  ctx.font = "800 18px system-ui, sans-serif";
+  ctx.fillText("TOP CONTRIBUTION MODES", artX, 600);
+
   topModes.forEach(([mode, score], index) => {
-    ctx.font = "700 28px system-ui, sans-serif";
-    ctx.fillText(`${modeMeta[mode].label}  ${score}`, 960, 535 + index * 48);
+    const y = 646 + index * 78;
+    ctx.fillStyle = "#17151f";
+    ctx.font = "700 21px system-ui, sans-serif";
+    ctx.fillText(modeMeta[mode].label, artX, y);
+
+    roundedRect(ctx, artX, y + 18, artWidth, 18, 9);
+    ctx.fillStyle = "#e8e4dc";
+    ctx.fill();
+
+    roundedRect(ctx, artX, y + 18, Math.max(42, artWidth * (score / 100)), 18, 9);
+    ctx.fillStyle = modeMeta[mode].color;
+    ctx.fill();
   });
 
-  ctx.font = "700 22px system-ui, sans-serif";
-  ctx.fillText("TEAMMATES CAN RELY ON", 125, 700);
-  ctx.font = "600 25px system-ui, sans-serif";
-  const selectedLabels = state.selectedSkills.map((skill) => skillLabels[skill]);
-  wrapText(ctx, selectedLabels.length ? selectedLabels.join("  •  ") : "Choose three power skills", 125, 745, 1100, 36);
+  // Shared bottom zone
+  ctx.strokeStyle = "rgba(23, 21, 31, 0.18)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(105, 885);
+  ctx.lineTo(1095, 885);
+  ctx.stroke();
 
-  if (state.name.trim()) {
-    ctx.font = "700 25px system-ui, sans-serif";
-    ctx.fillText(state.name.trim(), 125, 795);
-  }
+  ctx.fillStyle = "#65616f";
+  ctx.font = "800 18px system-ui, sans-serif";
+  ctx.fillText("TEAMMATES CAN RELY ON", 105, 930);
+
+  const skills = selectedLabels.length ? selectedLabels : ["Choose three power skills"];
+  const gap = 20;
+  const skillWidth = (990 - gap * (skills.length - 1)) / skills.length;
+
+  skills.forEach((label, index) => {
+    const x = 105 + index * (skillWidth + gap);
+    drawSkillCard(ctx, label, x, 958, skillWidth, 108, index === 1 ? "#edf6fb" : "#f7f3eb");
+  });
+
+  ctx.fillStyle = "#65616f";
+  ctx.font = "700 18px system-ui, sans-serif";
+  const footerName = state.name.trim() ? state.name.trim().toUpperCase() : "SHARE YOUR TYPE";
+  ctx.fillText(footerName, 105, 1105);
+  ctx.textAlign = "right";
+  ctx.fillText("REFLECTION, NOT EVALUATION", 1095, 1105);
+  ctx.textAlign = "left";
 
   const link = document.createElement("a");
-  const safeName = state.name.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "my";
+  const safeName =
+    state.name
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "") || "my";
+
   link.download = `${safeName}-creativity-archetype.png`;
   link.href = canvas.toDataURL("image/png");
   link.click();
   announce("Result card downloaded.");
+}
+
+function fitCanvasFont(
+  ctx,
+  text,
+  maxWidth,
+  startSize,
+  minimumSize,
+  family,
+  weight = 700,
+) {
+  let size = startSize;
+
+  while (size > minimumSize) {
+    ctx.font = `${weight} ${size}px ${family}`;
+
+    if (ctx.measureText(text).width <= maxWidth) {
+      break;
+    }
+
+    size -= 2;
+  }
+
+  return `${weight} ${size}px ${family}`;
+}
+
+function drawSkillCard(ctx, label, x, y, width, height, fill) {
+  roundedRect(ctx, x, y, width, height, 24);
+  ctx.fillStyle = fill;
+  ctx.fill();
+
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = "#17151f";
+  ctx.stroke();
+
+  ctx.fillStyle = "#17151f";
+  ctx.font = "700 21px system-ui, sans-serif";
+  wrapText(ctx, label, x + 22, y + 44, width - 44, 28);
+}
+
+function wrapTextWithLimit(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
+  const words = text.split(" ");
+  const lines = [];
+  let line = "";
+
+  words.forEach((word) => {
+    const testLine = line ? `${line} ${word}` : word;
+    if (ctx.measureText(testLine).width > maxWidth && line) {
+      lines.push(line);
+      line = word;
+    } else {
+      line = testLine;
+    }
+  });
+
+  if (line) lines.push(line);
+
+  const visible = lines.slice(0, maxLines);
+  if (lines.length > maxLines) {
+    let finalLine = visible[maxLines - 1];
+    while (ctx.measureText(`${finalLine}…`).width > maxWidth && finalLine.includes(" ")) {
+      finalLine = finalLine.slice(0, finalLine.lastIndexOf(" "));
+    }
+    visible[maxLines - 1] = `${finalLine}…`;
+  }
+
+  visible.forEach((lineText, index) => {
+    ctx.fillText(lineText, x, y + index * lineHeight);
+  });
+
+  return y + (visible.length - 1) * lineHeight;
 }
 
 function roundedRect(ctx, x, y, width, height, radius) {
@@ -1221,7 +1779,10 @@ function resetAssessment() {
   state.answers = [];
   state.result = null;
   state.selectedSkills = [];
+  state.growthSkills = [];
+  state.editingAnswers = false;
   state.name = "";
+  state.introText = "";
   render();
   announce("Assessment reset.");
 }
