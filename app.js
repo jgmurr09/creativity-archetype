@@ -1018,6 +1018,28 @@ function renderArchetypeLibrary(currentKey) {
     .join("");
 }
 
+async function drawPortraitSvgToCanvas(ctx, key, x, y, width, height) {
+  const svgMarkup = renderArchetypePortrait(key);
+  const blob = new Blob([svgMarkup], {
+    type: "image/svg+xml;charset=utf-8",
+  });
+
+  const url = URL.createObjectURL(blob);
+
+  try {
+    const img = await new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = reject;
+      image.src = url;
+    });
+
+    ctx.drawImage(img, x, y, width, height);
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
 function renderReveal() {
   app.innerHTML = `
     <section class="screen reveal-card" aria-label="Calculating result">
@@ -1495,7 +1517,7 @@ async function copyIntroduction() {
   }
 }
 
-function downloadResultCard() {
+async function downloadResultCard() {
   const canvas = document.createElement("canvas");
   canvas.width = 1200;
   canvas.height = 1200;
@@ -1589,12 +1611,12 @@ function downloadResultCard() {
   ctx.font = "700 22px system-ui, sans-serif";
   ctx.fillText(`${supportingType} energy`, leftX + 25, supportY + 61);
 
-  // Right art column. The portrait is clipped inside its own dedicated card.
-  const artX = 755;
-  const artY = 190;
-  const artWidth = 330;
-  const artHeight = 340;
-
+  // Right art column. Use the same full portrait artwork as the live result screen.
+  const artX = 735;
+  const artY = 175;
+  const artWidth = 360;
+  const artHeight = 380;
+  
   roundedRect(ctx, artX, artY, artWidth, artHeight, 54);
   const artGradient = ctx.createLinearGradient(artX, artY, artX, artY + artHeight);
   artGradient.addColorStop(0, "#fffaf0");
@@ -1604,11 +1626,18 @@ function downloadResultCard() {
   ctx.lineWidth = 4;
   ctx.strokeStyle = "#17151f";
   ctx.stroke();
-
+  
   ctx.save();
-  roundedRect(ctx, artX + 10, artY + 10, artWidth - 20, artHeight - 20, 46);
+  roundedRect(ctx, artX + 12, artY + 12, artWidth - 24, artHeight - 24, 44);
   ctx.clip();
-  drawHumanPortrait(ctx, result.primaryKey, artX + 28, artY + 24, artWidth - 56, artHeight - 48);
+  await drawPortraitSvgToCanvas(
+    ctx,
+    result.primaryKey,
+    artX + 18,
+    artY + 14,
+    artWidth - 36,
+    artHeight - 28,
+  );
   ctx.restore();
 
   // Modes are placed below the art with a fixed gap.
