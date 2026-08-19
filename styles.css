@@ -361,6 +361,7 @@ p {
 
 .poster-word {
   position: absolute;
+  z-index: 2;
   left: 22px;
   right: 22px;
   bottom: 22px;
@@ -371,13 +372,18 @@ p {
   letter-spacing: -0.055em;
 }
 
-.doodle {
+.poster-visual {
   position: absolute;
-  inset: 26px 26px 82px;
-  display: grid;
-  place-items: center;
-  font-size: 6rem;
-  filter: saturate(0.75);
+  z-index: 1;
+  top: 22px;
+  left: 18px;
+  width: calc(100% - 36px);
+  height: 178px;
+  display: block;
+  object-fit: contain;
+  object-position: center;
+  filter: drop-shadow(0 8px 12px rgba(23, 21, 31, 0.1));
+  pointer-events: none;
 }
 
 .poster::before,
