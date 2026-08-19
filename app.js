@@ -590,30 +590,9 @@ function renderIntro() {
         </p>
       </div>
       <div class="intro-art" aria-hidden="true">
-        <div class="poster">
-          <img
-            class="poster-visual"
-            src="${archetypeImages.synthesizer}"
-            alt=""
-          />
-          <span class="poster-word">Connect the dots</span>
-        </div>
-        <div class="poster">
-          <img
-            class="poster-visual"
-            src="${archetypeImages.empathizer}"
-            alt=""
-          />
-          <span class="poster-word">Read the room</span>
-        </div>
-        <div class="poster">
-          <img
-            class="poster-visual"
-            src="${archetypeImages.prototyper}"
-            alt=""
-          />
-          <span class="poster-word">Make it real</span>
-        </div>
+        <div class="poster"><span class="doodle">🧩</span><span class="poster-word">Connect the dots</span></div>
+        <div class="poster"><span class="doodle">🫶</span><span class="poster-word">Read the room</span></div>
+        <div class="poster"><span class="doodle">🛠️</span><span class="poster-word">Make it real</span></div>
       </div>
     </section>
   `;
