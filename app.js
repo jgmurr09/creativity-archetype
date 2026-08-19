@@ -4,97 +4,17 @@ const brandButton = document.querySelector("#brandButton");
 
 const COLORS = ["#80d7bd", "#ffcb66", "#8c63d8", "#ef8e77", "#71b8dc", "#b8dc8a"];
 
-const portraitStyles = {
-  empathizer: {
-    skin: "#8a563c",
-    hair: "#25130f",
-    shirt: "#ef8e77",
-    accent: "#1282ca",
-    hairStyle: "curls",
-    glasses: false,
-    badge: "heart",
-  },
-  researcher: {
-    skin: "#efc29f",
-    hair: "#73402d",
-    shirt: "#80d7bd",
-    accent: "#ffcb66",
-    hairStyle: "short",
-    glasses: true,
-    badge: "lens",
-  },
-  synthesizer: {
-    skin: "#b9724d",
-    hair: "#2b1d19",
-    shirt: "#8c63d8",
-    accent: "#80d7bd",
-    hairStyle: "waves",
-    glasses: false,
-    badge: "nodes",
-  },
-  ideaGenerator: {
-    skin: "#704529",
-    hair: "#171313",
-    shirt: "#ffcb66",
-    accent: "#1282ca",
-    hairStyle: "high",
-    glasses: false,
-    badge: "spark",
-  },
-  prototyper: {
-    skin: "#e2a476",
-    hair: "#3d261e",
-    shirt: "#ef8e77",
-    accent: "#8c63d8",
-    hairStyle: "crop",
-    glasses: false,
-    badge: "block",
-  },
-  artist: {
-    skin: "#5e3a2b",
-    hair: "#1e1512",
-    shirt: "#71b8dc",
-    accent: "#ffcb66",
-    hairStyle: "bob",
-    glasses: false,
-    badge: "brush",
-  },
-  tester: {
-    skin: "#f0cfb2",
-    hair: "#4d352c",
-    shirt: "#71b8dc",
-    accent: "#ef8e77",
-    hairStyle: "short",
-    glasses: true,
-    badge: "check",
-  },
-  facilitator: {
-    skin: "#9b5e40",
-    hair: "#241611",
-    shirt: "#b8dc8a",
-    accent: "#1282ca",
-    hairStyle: "bun",
-    glasses: false,
-    badge: "speech",
-  },
-  leader: {
-    skin: "#d89269",
-    hair: "#592f25",
-    shirt: "#ef8e77",
-    accent: "#ffcb66",
-    hairStyle: "side",
-    glasses: false,
-    badge: "arrow",
-  },
-  documenter: {
-    skin: "#8a5945",
-    hair: "#18120f",
-    shirt: "#8c63d8",
-    accent: "#80d7bd",
-    hairStyle: "locs",
-    glasses: true,
-    badge: "page",
-  },
+const archetypeImages = {
+  empathizer: "./assets/archetypes/empathizer_human-radar_storyset-people-talking.webp",
+  researcher: "./assets/archetypes/researcher_evidence-hunter_storyset-research-paper.webp",
+  synthesizer: "./assets/archetypes/synthesizer_dot-connector_storyset-mind-map.webp",
+  ideaGenerator: "./assets/archetypes/idea-generator_possibility-machine_storyset-creative-thinking.webp",
+  prototyper: "./assets/archetypes/prototyper_make-it-real_storyset-prototyping-process.webp",
+  artist: "./assets/archetypes/artist_craft-alchemist_storyset-create.webp",
+  tester: "./assets/archetypes/tester_friendly-skeptic_storyset-usability-testing.webp",
+  facilitator: "./assets/archetypes/facilitator_room-conductor_storyset-standup-meeting.webp",
+  leader: "./assets/archetypes/leader_north-star_storyset-team-goals.webp",
+  documenter: "./assets/archetypes/documenter_keeper-of-receipts_storyset-taking-notes.webp",
 };
 
 
@@ -121,6 +41,22 @@ const skillLabels = {
   ambiguity: "Comfort with Ambiguity",
   ownership: "Ownership Mentality",
   socialAwareness: "Social Awareness",
+};
+
+const powerSkillImages = {
+  collaboration: "./assets/power-skills/collaboration-team-mindset.webp",
+  givingFeedback: "./assets/power-skills/giving-feedback.webp",
+  receivingFeedback: "./assets/power-skills/receiving-feedback.webp",
+  humbleHustle: "./assets/power-skills/humble-hustle.webp",
+  empathy: "./assets/power-skills/empathy.webp",
+  adaptability: "./assets/power-skills/adaptability-flexibility.webp",
+  proactiveProblemSolving: "./assets/power-skills/proactive-problem-solving.webp",
+  resilience: "./assets/power-skills/resilience-grit.webp",
+  clearCommunication: "./assets/power-skills/clear-communication.webp",
+  creativity: "./assets/power-skills/creativity-resourcefulness.webp",
+  ambiguity: "./assets/power-skills/comfort-with-ambiguity.webp",
+  ownership: "./assets/power-skills/ownership-mentality.webp",
+  socialAwareness: "./assets/power-skills/social-awareness.webp",
 };
 
 const archetypes = {
@@ -998,7 +934,9 @@ function renderArchetypeLibrary(currentKey) {
       ([key, item]) => `
         <details class="archetype-card ${key === currentKey ? "is-current" : ""}">
           <summary>
-            <span class="archetype-swatch" style="--swatch-color:${item.color}" aria-hidden="true">${item.glyph}</span>
+            <span class="archetype-swatch" aria-hidden="true">
+              <img src="${archetypeImages[key]}" alt="" />
+            </span>
             <span class="archetype-summary-copy">
               <small>${stripLeadingThe(item.official)}</small>
               <strong>${item.playful}</strong>
@@ -1033,200 +971,6 @@ function stripLeadingThe(value) {
   return value.replace(/^The\s+/i, "");
 }
 
-function portraitHairSvg(style, hair) {
-  const common = `fill="${hair}" stroke="#17151f" stroke-width="4" stroke-linejoin="round"`;
-  if (style === "curls") {
-    return `
-      <g ${common}>
-        <circle cx="110" cy="80" r="28"/>
-        <circle cx="140" cy="61" r="32"/>
-        <circle cx="174" cy="60" r="34"/>
-        <circle cx="207" cy="75" r="29"/>
-        <circle cx="94" cy="112" r="24"/>
-        <circle cx="224" cy="111" r="24"/>
-      </g>
-    `;
-  }
-  if (style === "waves") {
-    return `
-      <path d="M96 126C88 71 112 42 160 39c48-3 76 29 67 89-17-16-34-22-51-20-20 3-42-3-61-20-3 15-9 27-19 38z" ${common}/>
-      <path d="M99 114c-14 30-9 66 9 89M220 112c17 29 13 65-6 90" fill="none" stroke="${hair}" stroke-width="18" stroke-linecap="round"/>
-    `;
-  }
-  if (style === "high") {
-    return `
-      <g ${common}>
-        <ellipse cx="160" cy="56" rx="61" ry="43"/>
-        <ellipse cx="126" cy="42" rx="30" ry="35"/>
-        <ellipse cx="194" cy="41" rx="31" ry="36"/>
-        <path d="M98 110c4-39 24-59 62-60 38 1 60 22 64 62-24-17-45-23-65-19-22 4-42-1-61-16z"/>
-      </g>
-    `;
-  }
-  if (style === "bob") {
-    return `
-      <path d="M91 125C88 64 112 39 160 38c49 1 74 27 70 88l-2 78h-28l-5-89c-21 9-46 9-70 0l-4 89H94z" ${common}/>
-    `;
-  }
-  if (style === "bun") {
-    return `
-      <circle cx="202" cy="43" r="31" ${common}/>
-      <path d="M96 126C91 69 114 42 160 40c46 2 70 30 65 87-21-18-43-25-66-20-21 4-42-2-63-18z" ${common}/>
-    `;
-  }
-  if (style === "side") {
-    return `
-      <path d="M95 118C92 69 113 43 158 40c47-3 72 25 69 79-25-5-46-18-61-39-20 20-43 33-71 38z" ${common}/>
-    `;
-  }
-  if (style === "locs") {
-    return `
-      <path d="M96 119C92 68 115 41 160 40c45 1 68 28 65 79-22-17-44-24-65-21-22 3-43-3-64-19z" ${common}/>
-      <g fill="${hair}" stroke="#17151f" stroke-width="4">
-        <rect x="90" y="98" width="22" height="117" rx="11"/>
-        <rect x="112" y="82" width="22" height="137" rx="11"/>
-        <rect x="186" y="83" width="22" height="136" rx="11"/>
-        <rect x="208" y="99" width="22" height="116" rx="11"/>
-      </g>
-    `;
-  }
-  if (style === "crop") {
-    return `<path d="M98 111C99 66 121 43 160 43s61 23 62 68c-24-13-45-18-63-14-21 4-41 0-61-13z" ${common}/>`;
-  }
-  return `<path d="M97 116C95 68 117 43 160 42c43 1 66 26 63 75-22-14-43-19-63-16-21 3-42-2-63-16z" ${common}/>`;
-}
-
-function portraitBadgeSvg(kind, accent) {
-  const stroke = `stroke="#17151f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"`;
-  let icon = "";
-  if (kind === "heart") {
-    icon = `<path d="M247 83c-16-17-39 5-18 27l18 17 18-17c21-22-2-44-18-27z" fill="${accent}" ${stroke}/>`;
-  } else if (kind === "lens") {
-    icon = `<circle cx="245" cy="99" r="18" fill="none" ${stroke}/><path d="M258 112l17 17" ${stroke}/>`;
-  } else if (kind === "nodes") {
-    icon = `<circle cx="229" cy="91" r="7" fill="${accent}" ${stroke}/><circle cx="267" cy="81" r="7" fill="${accent}" ${stroke}/><circle cx="260" cy="121" r="7" fill="${accent}" ${stroke}/><path d="M236 89l24-6M234 96l21 20M266 88l-4 26" fill="none" ${stroke}/>`;
-  } else if (kind === "spark") {
-    icon = `<path d="M249 72l7 19 19 7-19 7-7 19-7-19-19-7 19-7z" fill="${accent}" ${stroke}/>`;
-  } else if (kind === "block") {
-    icon = `<path d="M229 88l21-12 21 12-21 13zM229 88v25l21 13 21-13V88M250 101v25" fill="${accent}" ${stroke}/>`;
-  } else if (kind === "brush") {
-    icon = `<path d="M236 120l27-36" ${stroke}/><path d="M263 84l9-9 8 8-9 9z" fill="${accent}" ${stroke}/><path d="M236 120c-8 0-13 5-14 14 9 0 14-5 14-14z" fill="${accent}" ${stroke}/>`;
-  } else if (kind === "check") {
-    icon = `<path d="M229 102l13 13 29-34" fill="none" ${stroke}/>`;
-  } else if (kind === "speech") {
-    icon = `<path d="M225 80h50v34h-26l-14 13 3-13h-13z" fill="${accent}" ${stroke}/><circle cx="239" cy="97" r="2.5"/><circle cx="250" cy="97" r="2.5"/><circle cx="261" cy="97" r="2.5"/>`;
-  } else if (kind === "arrow") {
-    icon = `<path d="M228 119l43-43M247 76h24v24" fill="none" ${stroke}/>`;
-  } else {
-    icon = `<path d="M232 76h36v51h-36z" fill="${accent}" ${stroke}/><path d="M240 91h20M240 102h20M240 113h14" ${stroke}/>`;
-  }
-  return `
-    <circle cx="250" cy="101" r="43" fill="rgba(255,255,255,0.76)" stroke="#17151f" stroke-width="4"/>
-    ${icon}
-  `;
-}
-
-function renderArchetypePortrait(key) {
-  const style = portraitStyles[key] || portraitStyles.synthesizer;
-  const glasses = style.glasses
-    ? `
-      <g fill="none" stroke="#17151f" stroke-width="4">
-        <rect x="113" y="126" width="38" height="28" rx="11"/>
-        <rect x="169" y="126" width="38" height="28" rx="11"/>
-        <path d="M151 138h18"/>
-      </g>
-    `
-    : "";
-  return `
-    <svg viewBox="0 0 320 360" focusable="false" aria-hidden="true">
-      <defs>
-        <linearGradient id="portraitGlow-${key}" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#ffffff" stop-opacity="0.94"/>
-          <stop offset="1" stop-color="${style.accent}" stop-opacity="0.22"/>
-        </linearGradient>
-      </defs>
-      <path d="M25 340V159C25 76 82 19 160 19s135 57 135 140v181z" fill="url(#portraitGlow-${key})"/>
-      <circle cx="63" cy="84" r="13" fill="${style.accent}" opacity="0.8"/>
-      <circle cx="281" cy="167" r="9" fill="${style.shirt}" opacity="0.9"/>
-      <path d="M54 350c10-76 48-112 106-112s96 36 106 112z" fill="${style.shirt}" stroke="#17151f" stroke-width="5"/>
-      <path d="M132 236h56v48h-56z" fill="${style.skin}" stroke="#17151f" stroke-width="4"/>
-      <circle cx="98" cy="147" r="18" fill="${style.skin}" stroke="#17151f" stroke-width="4"/>
-      <circle cx="222" cy="147" r="18" fill="${style.skin}" stroke="#17151f" stroke-width="4"/>
-      <rect x="100" y="70" width="120" height="164" rx="57" fill="${style.skin}" stroke="#17151f" stroke-width="5"/>
-      ${portraitHairSvg(style.hairStyle, style.hair)}
-      <circle cx="135" cy="140" r="6" fill="#17151f"/>
-      <circle cx="185" cy="140" r="6" fill="#17151f"/>
-      <circle cx="133" cy="137" r="2" fill="#ffffff"/>
-      <circle cx="183" cy="137" r="2" fill="#ffffff"/>
-      <path d="M160 145l-6 28h14" fill="none" stroke="#17151f" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M143 190c11 11 23 11 34 0" fill="none" stroke="#17151f" stroke-width="5" stroke-linecap="round"/>
-      ${glasses}
-      ${portraitBadgeSvg(style.badge, style.accent)}
-      <path d="M92 298c20-11 39-16 57-16M228 298c-20-11-39-16-57-16" fill="none" stroke="#17151f" stroke-width="5" stroke-linecap="round"/>
-    </svg>
-  `;
-}
-
-function drawHumanPortrait(ctx, key, x, y, width, height) {
-  const style = portraitStyles[key] || portraitStyles.synthesizer;
-  ctx.save();
-  ctx.translate(x, y);
-
-  const gradient = ctx.createLinearGradient(0, 0, 0, height);
-  gradient.addColorStop(0, "rgba(255,255,255,0.96)");
-  gradient.addColorStop(1, style.accent);
-  ctx.fillStyle = gradient;
-  roundedRect(ctx, 0, 0, width, height, 86);
-  ctx.fill();
-  ctx.lineWidth = 5;
-  ctx.strokeStyle = "#17151f";
-  ctx.stroke();
-
-  ctx.fillStyle = style.shirt;
-  ctx.beginPath();
-  ctx.ellipse(width / 2, height * 0.9, width * 0.34, height * 0.28, 0, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.stroke();
-
-  ctx.fillStyle = style.skin;
-  ctx.fillRect(width * 0.43, height * 0.56, width * 0.14, height * 0.16);
-  ctx.strokeRect(width * 0.43, height * 0.56, width * 0.14, height * 0.16);
-
-  roundedRect(ctx, width * 0.31, height * 0.19, width * 0.38, height * 0.48, width * 0.17);
-  ctx.fill();
-  ctx.stroke();
-
-  ctx.fillStyle = style.hair;
-  ctx.beginPath();
-  ctx.ellipse(width / 2, height * 0.23, width * 0.21, height * 0.14, 0, Math.PI, Math.PI * 2);
-  ctx.lineTo(width * 0.69, height * 0.34);
-  ctx.quadraticCurveTo(width * 0.51, height * 0.22, width * 0.31, height * 0.34);
-  ctx.closePath();
-  ctx.fill();
-  ctx.stroke();
-
-  ctx.fillStyle = "#17151f";
-  ctx.beginPath();
-  ctx.arc(width * 0.43, height * 0.42, 5, 0, Math.PI * 2);
-  ctx.arc(width * 0.57, height * 0.42, 5, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.lineWidth = 4;
-  ctx.lineCap = "round";
-  ctx.beginPath();
-  ctx.moveTo(width * 0.45, height * 0.56);
-  ctx.quadraticCurveTo(width * 0.5, height * 0.6, width * 0.55, height * 0.56);
-  ctx.stroke();
-
-  ctx.fillStyle = style.accent;
-  ctx.beginPath();
-  ctx.arc(width * 0.78, height * 0.24, 34, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.stroke();
-
-  ctx.restore();
-}
-
 function renderResults() {
   const result = state.result;
   const primary = result.primary;
@@ -1238,6 +982,9 @@ function renderResults() {
 
   app.innerHTML = `
     <section class="screen results-layout" aria-labelledby="resultTitle">
+      <aside class="result-snapshot-note" aria-label="Result context">
+        <strong>A snapshot, not a verdict.</strong> This result is subjective and reflects where your answers land in this moment. It can shift with your context, role, team, and experience.
+      </aside>
       <article class="result-hero" style="--archetype-color: ${primary.color}">
         <div>
           <p class="result-label">Your creativity archetype</p>
@@ -1255,7 +1002,7 @@ function renderResults() {
           </div>
         </div>
         <div class="result-portrait">
-          ${renderArchetypePortrait(result.primaryKey)}
+          <img src="${archetypeImages[result.primaryKey]}" alt="${primary.playful} archetype illustration" />
         </div>
       </article>
 
@@ -1495,7 +1242,7 @@ async function copyIntroduction() {
   }
 }
 
-function downloadResultCard() {
+async function downloadResultCard() {
   const canvas = document.createElement("canvas");
   canvas.width = 1200;
   canvas.height = 1200;
@@ -1507,10 +1254,14 @@ function downloadResultCard() {
   const topModes = Object.entries(result.modeScores)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 3);
-  const selectedLabels = state.selectedSkills
-    .map((skill) => skillLabels[skill])
-    .slice(0, 3);
+  const skillKeys = (state.selectedSkills.length ? state.selectedSkills : primary.skills).slice(0, 3);
   const shareLine = (state.introText || primary.intro).split(" Bring me in")[0];
+
+  const [archetypeImage, tangLogo, ...skillImages] = await Promise.all([
+    loadImage(archetypeImages[result.primaryKey]),
+    loadImage("./tang-t.png"),
+    ...skillKeys.map((skill) => loadImage(powerSkillImages[skill])),
+  ]);
 
   ctx.fillStyle = "#f7f3eb";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -1522,8 +1273,8 @@ function downloadResultCard() {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   ctx.save();
-  ctx.shadowColor = "rgba(23, 21, 31, 0.16)";
-  ctx.shadowBlur = 32;
+  ctx.shadowColor = "rgba(23, 21, 31, 0.14)";
+  ctx.shadowBlur = 30;
   ctx.shadowOffsetY = 14;
   roundedRect(ctx, 55, 55, 1090, 1090, 48);
   ctx.fillStyle = "#fffdf8";
@@ -1536,128 +1287,144 @@ function downloadResultCard() {
   ctx.stroke();
 
   // Header
-  roundedRect(ctx, 98, 92, 48, 48, 8);
-  ctx.lineWidth = 4;
+  ctx.save();
+  roundedRect(ctx, 96, 88, 62, 62, 14);
+  ctx.clip();
+  drawContainedImage(ctx, tangLogo, 104, 96, 46, 46);
+  ctx.restore();
+  roundedRect(ctx, 96, 88, 62, 62, 14);
+  ctx.lineWidth = 3;
   ctx.strokeStyle = "#17151f";
   ctx.stroke();
+
   ctx.fillStyle = "#17151f";
-  ctx.font = "900 34px system-ui, sans-serif";
-  ctx.fillText("T", 110, 129);
-  ctx.font = "800 23px system-ui, sans-serif";
-  ctx.fillText("TANG ONBOARDING", 164, 124);
+  ctx.font = "800 24px system-ui, sans-serif";
+  ctx.fillText("Creativity Archetype", 176, 118);
+  ctx.fillStyle = "#65616f";
+  ctx.font = "700 16px system-ui, sans-serif";
+  ctx.fillText("TANG Onboarding", 176, 142);
+
   ctx.textAlign = "right";
-  ctx.fillStyle = "#65616f";
-  ctx.font = "700 21px system-ui, sans-serif";
-  ctx.fillText("TANG ONBOARDING", 1098, 124);
-  ctx.textAlign = "left";
-
-  // Left content column. Nothing from the portrait is allowed into this zone.
-  const leftX = 105;
-  const leftWidth = 560;
-
-  ctx.fillStyle = "#65616f";
-  ctx.font = "800 19px system-ui, sans-serif";
-  ctx.fillText("YOUR CREATIVITY ARCHETYPE", leftX, 218);
-
-  ctx.fillStyle = "#17151f";
-  ctx.font = fitCanvasFont(ctx, primary.playful, leftWidth, 82, 54, "Georgia, serif", 800);
-  const titleBottom = wrapTextWithLimit(ctx, primary.playful, leftX, 308, leftWidth, 76, 2);
-
-  const roleY = Math.max(430, titleBottom + 36);
-  ctx.fillStyle = primary.color;
-  roundedRect(ctx, leftX, roleY, 250, 50, 25);
-  ctx.fill();
-  ctx.fillStyle = "#17151f";
-  ctx.font = "800 20px system-ui, sans-serif";
-  ctx.fillText(stripLeadingThe(primary.official).toUpperCase(), leftX + 23, roleY + 33);
-
-  ctx.fillStyle = "#17151f";
-  ctx.font = "500 28px system-ui, sans-serif";
-  const descriptionBottom = wrapTextWithLimit(ctx, shareLine, leftX, roleY + 112, leftWidth, 42, 4);
-
-  const supportY = Math.max(735, descriptionBottom + 46);
-  ctx.fillStyle = "#65616f";
-  ctx.font = "800 18px system-ui, sans-serif";
-  ctx.fillText("ALSO SHOWING", leftX, supportY);
-  roundedRect(ctx, leftX, supportY + 25, 430, 56, 28);
+  roundedRect(ctx, 895, 94, 206, 42, 21);
   ctx.fillStyle = "#edf6fb";
   ctx.fill();
   ctx.lineWidth = 2;
   ctx.strokeStyle = "#1282ca";
   ctx.stroke();
   ctx.fillStyle = "#17151f";
-  ctx.font = "700 22px system-ui, sans-serif";
-  ctx.fillText(`${supportingType} energy`, leftX + 25, supportY + 61);
+  ctx.font = "700 18px system-ui, sans-serif";
+  ctx.fillText("Snapshot for now", 1080, 121);
+  ctx.textAlign = "left";
 
-  // Right art column. The portrait is clipped inside its own dedicated card.
-  const artX = 755;
-  const artY = 190;
-  const artWidth = 330;
-  const artHeight = 340;
+  const leftX = 105;
+  const leftWidth = 560;
+  const artX = 730;
+  const artY = 170;
+  const artWidth = 375;
+  const artHeight = 300;
 
-  roundedRect(ctx, artX, artY, artWidth, artHeight, 54);
-  const artGradient = ctx.createLinearGradient(artX, artY, artX, artY + artHeight);
-  artGradient.addColorStop(0, "#fffaf0");
-  artGradient.addColorStop(1, `${primary.color}77`);
-  ctx.fillStyle = artGradient;
+  // Left content
+  ctx.fillStyle = "#65616f";
+  ctx.font = "800 18px system-ui, sans-serif";
+  ctx.fillText("YOUR CREATIVITY ARCHETYPE", leftX, 204);
+
+  ctx.fillStyle = "#17151f";
+  ctx.font = fitCanvasFont(ctx, primary.playful, leftWidth, 76, 50, "Georgia, serif", 800);
+  const titleBottom = wrapTextWithLimit(ctx, primary.playful, leftX, 286, leftWidth, 72, 2);
+
+  const roleY = Math.max(402, titleBottom + 34);
+  roundedRect(ctx, leftX, roleY, 254, 50, 25);
+  ctx.fillStyle = primary.color;
+  ctx.fill();
+  ctx.fillStyle = "#17151f";
+  ctx.font = "800 20px system-ui, sans-serif";
+  ctx.fillText(stripLeadingThe(primary.official).toUpperCase(), leftX + 22, roleY + 33);
+
+  ctx.fillStyle = "#17151f";
+  ctx.font = "500 28px system-ui, sans-serif";
+  const descriptionBottom = wrapTextWithLimit(ctx, shareLine, leftX, roleY + 102, leftWidth, 40, 4);
+
+  // Supporting energy and best-use cards
+  const infoY = descriptionBottom + 44;
+  drawMiniInfoCard(ctx, {
+    x: leftX,
+    y: infoY,
+    width: 255,
+    height: 126,
+    eyebrow: "ALSO SHOWING",
+    value: `${supportingType} energy`,
+    fill: "#edf6fb",
+    accent: "#1282ca",
+  });
+
+  drawMiniInfoCard(ctx, {
+    x: leftX + 285,
+    y: infoY,
+    width: 275,
+    height: 126,
+    eyebrow: "BRING ME IN WHEN",
+    value: primary.callWhen[0],
+    fill: "#f7f3eb",
+    accent: primary.color,
+    bodySize: 20,
+    lineHeight: 28,
+  });
+
+  // Art panel
+  roundedRect(ctx, artX, artY, artWidth, artHeight, 34);
+  ctx.fillStyle = "#fffdf8";
   ctx.fill();
   ctx.lineWidth = 4;
   ctx.strokeStyle = "#17151f";
   ctx.stroke();
 
   ctx.save();
-  roundedRect(ctx, artX + 10, artY + 10, artWidth - 20, artHeight - 20, 46);
+  roundedRect(ctx, artX + 8, artY + 8, artWidth - 16, artHeight - 16, 26);
   ctx.clip();
-  drawHumanPortrait(ctx, result.primaryKey, artX + 28, artY + 24, artWidth - 56, artHeight - 48);
+  drawContainedImage(ctx, archetypeImage, artX + 14, artY + 14, artWidth - 28, artHeight - 28);
   ctx.restore();
 
-  // Modes are placed below the art with a fixed gap.
   ctx.fillStyle = "#65616f";
   ctx.font = "800 18px system-ui, sans-serif";
-  ctx.fillText("TOP CONTRIBUTION MODES", artX, 600);
+  ctx.fillText("TOP CONTRIBUTION MODES", artX, 516);
 
   topModes.forEach(([mode, score], index) => {
-    const y = 646 + index * 78;
-    ctx.fillStyle = "#17151f";
-    ctx.font = "700 21px system-ui, sans-serif";
-    ctx.fillText(modeMeta[mode].label, artX, y);
-
-    roundedRect(ctx, artX, y + 18, artWidth, 18, 9);
-    ctx.fillStyle = "#e8e4dc";
-    ctx.fill();
-
-    roundedRect(ctx, artX, y + 18, Math.max(42, artWidth * (score / 100)), 18, 9);
-    ctx.fillStyle = modeMeta[mode].color;
-    ctx.fill();
+    drawModeCard(ctx, modeMeta[mode].label, score, artX, 545 + index * 96, artWidth, modeMeta[mode].color);
   });
 
-  // Shared bottom zone
-  ctx.strokeStyle = "rgba(23, 21, 31, 0.18)";
+  // Bottom power skills section
+  ctx.strokeStyle = "rgba(23, 21, 31, 0.14)";
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(105, 885);
-  ctx.lineTo(1095, 885);
+  ctx.moveTo(105, 825);
+  ctx.lineTo(1095, 825);
   ctx.stroke();
 
   ctx.fillStyle = "#65616f";
   ctx.font = "800 18px system-ui, sans-serif";
-  ctx.fillText("TEAMMATES CAN RELY ON", 105, 930);
+  ctx.fillText("POWER SKILLS TEAMMATES CAN RELY ON", 105, 870);
 
-  const skills = selectedLabels.length ? selectedLabels : ["Choose three power skills"];
-  const gap = 20;
-  const skillWidth = (990 - gap * (skills.length - 1)) / skills.length;
-
-  skills.forEach((label, index) => {
-    const x = 105 + index * (skillWidth + gap);
-    drawSkillCard(ctx, label, x, 958, skillWidth, 108, index === 1 ? "#edf6fb" : "#f7f3eb");
+  const gap = 22;
+  const cardWidth = (990 - gap * 2) / 3;
+  skillKeys.forEach((skill, index) => {
+    const x = 105 + index * (cardWidth + gap);
+    drawPowerSkillCard(ctx, {
+      image: skillImages[index],
+      label: skillLabels[skill],
+      x,
+      y: 895,
+      width: cardWidth,
+      height: 170,
+      fill: index === 1 ? "#edf6fb" : "#f7f3eb",
+    });
   });
 
   ctx.fillStyle = "#65616f";
   ctx.font = "700 18px system-ui, sans-serif";
   const footerName = state.name.trim() ? state.name.trim().toUpperCase() : "SHARE YOUR TYPE";
-  ctx.fillText(footerName, 105, 1105);
+  ctx.fillText(footerName, 105, 1108);
   ctx.textAlign = "right";
-  ctx.fillText("REFLECTION, NOT EVALUATION", 1095, 1105);
+  ctx.fillText("Reflection, not evaluation", 1095, 1108);
   ctx.textAlign = "left";
 
   const link = document.createElement("a");
@@ -1672,6 +1439,33 @@ function downloadResultCard() {
   link.href = canvas.toDataURL("image/png");
   link.click();
   announce("Result card downloaded.");
+}
+
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error(`Could not load image: ${src}`));
+    image.src = src;
+  });
+}
+
+function drawContainedImage(ctx, image, x, y, width, height) {
+  const scale = Math.min(width / image.naturalWidth, height / image.naturalHeight);
+  const drawWidth = image.naturalWidth * scale;
+  const drawHeight = image.naturalHeight * scale;
+  const drawX = x + (width - drawWidth) / 2;
+  const drawY = y + (height - drawHeight) / 2;
+  ctx.drawImage(image, drawX, drawY, drawWidth, drawHeight);
+}
+
+function drawCoverImage(ctx, image, x, y, width, height) {
+  const scale = Math.max(width / image.naturalWidth, height / image.naturalHeight);
+  const drawWidth = image.naturalWidth * scale;
+  const drawHeight = image.naturalHeight * scale;
+  const drawX = x + (width - drawWidth) / 2;
+  const drawY = y + (height - drawHeight) / 2;
+  ctx.drawImage(image, drawX, drawY, drawWidth, drawHeight);
 }
 
 function fitCanvasFont(
@@ -1698,18 +1492,71 @@ function fitCanvasFont(
   return `${weight} ${size}px ${family}`;
 }
 
-function drawSkillCard(ctx, label, x, y, width, height, fill) {
+function drawPowerSkillCard(ctx, { image, label, x, y, width, height, fill }) {
   roundedRect(ctx, x, y, width, height, 24);
   ctx.fillStyle = fill;
   ctx.fill();
-
   ctx.lineWidth = 3;
+  ctx.strokeStyle = "#17151f";
+  ctx.stroke();
+
+  const imageSize = 88;
+  roundedRect(ctx, x + 18, y + 18, imageSize, imageSize, 18);
+  ctx.save();
+  ctx.clip();
+  drawCoverImage(ctx, image, x + 18, y + 18, imageSize, imageSize);
+  ctx.restore();
+
+  ctx.fillStyle = "#17151f";
+  ctx.font = "700 20px system-ui, sans-serif";
+  wrapTextWithLimit(ctx, label, x + 124, y + 45, width - 146, 26, 3);
+}
+
+function drawMiniInfoCard(
+  ctx,
+  { x, y, width, height, eyebrow, value, fill, accent, bodySize = 24, lineHeight = 32 },
+) {
+  roundedRect(ctx, x, y, width, height, 22);
+  ctx.fillStyle = fill;
+  ctx.fill();
+  ctx.lineWidth = 2.5;
+  ctx.strokeStyle = accent;
+  ctx.stroke();
+
+  ctx.fillStyle = "#65616f";
+  ctx.font = "800 15px system-ui, sans-serif";
+  ctx.fillText(eyebrow, x + 18, y + 28);
+
+  ctx.fillStyle = "#17151f";
+  ctx.font = `700 ${bodySize}px system-ui, sans-serif`;
+  wrapTextWithLimit(ctx, value, x + 18, y + 66, width - 36, lineHeight, 3);
+}
+
+function drawModeCard(ctx, label, score, x, y, width, accent) {
+  roundedRect(ctx, x, y, width, 78, 22);
+  ctx.fillStyle = "#f7f3eb";
+  ctx.fill();
+  ctx.lineWidth = 2.5;
   ctx.strokeStyle = "#17151f";
   ctx.stroke();
 
   ctx.fillStyle = "#17151f";
   ctx.font = "700 21px system-ui, sans-serif";
-  wrapText(ctx, label, x + 22, y + 44, width - 44, 28);
+  ctx.fillText(label, x + 18, y + 29);
+
+  ctx.textAlign = "right";
+  ctx.fillStyle = "#65616f";
+  ctx.font = "700 16px system-ui, sans-serif";
+  ctx.fillText(`${Math.round(score)}%`, x + width - 18, y + 29);
+  ctx.textAlign = "left";
+
+  roundedRect(ctx, x + 18, y + 44, width - 36, 14, 7);
+  ctx.fillStyle = "#e8e4dc";
+  ctx.fill();
+
+  roundedRect(ctx, x + 18, y + 44, Math.max(36, (width - 36) * (score / 100)), 14, 7);
+  ctx.fillStyle = accent;
+  ctx.fill();
 }
 
 function wrapTextWithLimit(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
