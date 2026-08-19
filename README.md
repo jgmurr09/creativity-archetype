@@ -4,7 +4,7 @@ A dependency-free, responsive prototype for a fast TANG onboarding reflection ex
 
 ## What is included
 
-- 10 one-word, this-or-that choices
+- 10 one-word, this-or-that choices 
 - 60 to 90 second completion target
 - 10 team contribution archetypes
 - Six-mode contribution profile
