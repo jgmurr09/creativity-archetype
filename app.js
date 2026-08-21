@@ -732,7 +732,7 @@ function selectOption(optionIndex) {
     if (state.screen !== "reveal") return;
     state.screen = "results";
     render();
-    announce(`Your strongest signal is ${state.result.primary.playful}.`);
+    announce(`Your strongest signal is ${stripLeadingThe(state.result.primary.official)}.`);
   }, 1350);
 }
 
@@ -878,7 +878,7 @@ function getBalancedCrew(result) {
     {
       key: result.primaryKey,
       label: "Your natural anchor",
-      reason: `${result.primary.playful} brings ${result.primary.modes.map((mode) => modeMeta[mode].label).join(" and ")} energy to the crew.`,
+      reason: `${stripLeadingThe(result.primary.official)} brings ${result.primary.modes.map((mode) => modeMeta[mode].label).join(" and ")} energy to the crew.`,
     },
   ];
 
@@ -890,7 +890,7 @@ function getBalancedCrew(result) {
     crew.push({
       key: stretchKey,
       label: `Activate more ${modeMeta[result.stretchMode].label}`,
-      reason: `${archetypes[stretchKey].playful} adds energy in your lightest contribution mode and helps the team avoid leaning only on your default style.`,
+      reason: `${stripLeadingThe(archetypes[stretchKey].official)} adds energy in your lightest contribution mode and helps the team avoid leaning only on your default style.`,
     });
   }
 
@@ -900,7 +900,7 @@ function getBalancedCrew(result) {
     crew.push({
       key: counterKey,
       label: "Create a productive counterweight",
-      reason: `${archetypes[counterKey].playful} introduces a different instinct that can question, focus, or ground the direction without canceling your strengths.`,
+      reason: `${stripLeadingThe(archetypes[counterKey].official)} introduces a different instinct that can question, focus, or ground the direction without canceling your strengths.`,
     });
   }
 
@@ -921,7 +921,7 @@ function getBalancedCrew(result) {
     crew.push({
       key: finalKey,
       label: "Round out the project cycle",
-      reason: `${archetypes[finalKey].playful} adds ${archetypes[finalKey].modes.map((mode) => modeMeta[mode].label).join(" and ")} coverage so the crew can move from understanding to action with fewer blind spots.`,
+      reason: `${stripLeadingThe(archetypes[finalKey].official)} adds ${archetypes[finalKey].modes.map((mode) => modeMeta[mode].label).join(" and ")} coverage so the crew can move from understanding to action with fewer blind spots.`,
     });
   }
 
@@ -938,8 +938,8 @@ function renderArchetypeLibrary(currentKey) {
               <img src="${archetypeImages[key]}" alt="" />
             </span>
             <span class="archetype-summary-copy">
-              <small>${stripLeadingThe(item.official)}</small>
-              <strong>${item.playful}</strong>
+              <strong>${stripLeadingThe(item.official)}</strong>
+              <small>${item.playful}</small>
             </span>
             <span class="archetype-expand" aria-hidden="true">+</span>
           </summary>
@@ -974,7 +974,7 @@ function stripLeadingThe(value) {
 function renderResults() {
   const result = state.result;
   const primary = result.primary;
-  const supportNames = result.supporting.map((item) => stripLeadingThe(item.playful));
+  const supportNames = result.supporting.map((item) => stripLeadingThe(item.official));
   const energyLine = result.isBlend
     ? `With strong ${supportNames[0]} energy`
     : `A clear ${stripLeadingThe(primary.official)} signal`;
@@ -988,13 +988,13 @@ function renderResults() {
       <article class="result-hero" style="--archetype-color: ${primary.color}">
         <div>
           <p class="result-label">Your creativity archetype</p>
-          <h1 class="result-title" id="resultTitle">${primary.playful}</h1>
+          <h1 class="result-title" id="resultTitle">${stripLeadingThe(primary.official)}</h1>
+          <p class="result-playful">${primary.playful}</p>
           <p class="result-energy">${energyLine}</p>
-          <p class="result-official">Best-fit team role: ${stripLeadingThe(primary.official)}</p>
           <p class="result-description">${primary.description}</p>
           <div class="supporting-row" aria-label="Supporting archetypes">
             ${result.supporting
-              .map((item) => `<span class="chip">${stripLeadingThe(item.playful)}</span>`)
+              .map((item) => `<span class="chip">${stripLeadingThe(item.official)}</span>`)
               .join("")}
           </div>
           <div class="result-actions compact">
@@ -1002,7 +1002,7 @@ function renderResults() {
           </div>
         </div>
         <div class="result-portrait">
-          <img src="${archetypeImages[result.primaryKey]}" alt="${primary.playful} archetype illustration" />
+          <img src="${archetypeImages[result.primaryKey]}" alt="${stripLeadingThe(primary.official)} — ${primary.playful} archetype illustration" />
         </div>
       </article>
 
@@ -1051,8 +1051,8 @@ function renderResults() {
                   <article class="crew-card ${member.key === result.primaryKey ? "is-you" : ""}" style="--crew-color:${item.color}">
                     <span class="crew-number">${String(index + 1).padStart(2, "0")}</span>
                     <p class="crew-label">${member.label}</p>
-                    <h4>${item.playful}</h4>
-                    <p class="crew-role">${stripLeadingThe(item.official)}</p>
+                    <h4>${stripLeadingThe(item.official)}</h4>
+                    <p class="crew-role">${item.playful}</p>
                     <div class="mode-chip-row">
                       ${item.modes.map((mode) => `<span class="mode-chip">${modeMeta[mode].label}</span>`).join("")}
                     </div>
@@ -1250,7 +1250,7 @@ async function downloadResultCard() {
   const ctx = canvas.getContext("2d");
   const result = state.result;
   const primary = result.primary;
-  const supportingType = stripLeadingThe(result.supporting[0].playful);
+  const supportingType = stripLeadingThe(result.supporting[0].official);
   const topModes = Object.entries(result.modeScores)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 3);
@@ -1329,20 +1329,22 @@ async function downloadResultCard() {
   ctx.fillText("YOUR CREATIVITY ARCHETYPE", leftX, 204);
 
   ctx.fillStyle = "#17151f";
-  ctx.font = fitCanvasFont(ctx, primary.playful, leftWidth, 76, 50, "Georgia, serif", 800);
-  const titleBottom = wrapTextWithLimit(ctx, primary.playful, leftX, 286, leftWidth, 72, 2);
+  const primaryRole = stripLeadingThe(primary.official);
+  ctx.font = fitCanvasFont(ctx, primaryRole, leftWidth, 76, 50, "Georgia, serif", 800);
+  const titleBottom = wrapTextWithLimit(ctx, primaryRole, leftX, 286, leftWidth, 72, 2);
 
-  const roleY = Math.max(402, titleBottom + 34);
-  roundedRect(ctx, leftX, roleY, 254, 50, 25);
+  const nicknameY = Math.max(372, titleBottom + 34);
+  ctx.font = "800 20px system-ui, sans-serif";
+  const nicknameWidth = Math.min(leftWidth, Math.max(240, ctx.measureText(primary.playful.toUpperCase()).width + 44));
+  roundedRect(ctx, leftX, nicknameY, nicknameWidth, 50, 25);
   ctx.fillStyle = primary.color;
   ctx.fill();
   ctx.fillStyle = "#17151f";
-  ctx.font = "800 20px system-ui, sans-serif";
-  ctx.fillText(stripLeadingThe(primary.official).toUpperCase(), leftX + 22, roleY + 33);
+  ctx.fillText(primary.playful.toUpperCase(), leftX + 22, nicknameY + 33);
 
   ctx.fillStyle = "#17151f";
   ctx.font = "500 28px system-ui, sans-serif";
-  const descriptionBottom = wrapTextWithLimit(ctx, shareLine, leftX, roleY + 102, leftWidth, 40, 4);
+  const descriptionBottom = wrapTextWithLimit(ctx, shareLine, leftX, nicknameY + 102, leftWidth, 40, 4);
 
   // Supporting energy and best-use cards
   const infoY = descriptionBottom + 44;
