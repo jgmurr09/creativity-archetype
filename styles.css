@@ -660,16 +660,16 @@ p {
   letter-spacing: -0.058em;
 }
 
-.result-energy {
+.result-playful {
   margin-bottom: 8px;
-  font-size: clamp(1rem, 1.8vw, 1.18rem);
-  font-weight: 820;
+  font-size: clamp(1.12rem, 2vw, 1.35rem);
+  font-weight: 840;
 }
 
-.result-official {
+.result-energy {
   margin-bottom: 18px;
   color: rgba(23, 21, 31, 0.76);
-  font-size: 0.98rem;
+  font-size: clamp(0.96rem, 1.6vw, 1.08rem);
   font-weight: 760;
 }
 
@@ -1158,18 +1158,17 @@ p {
   display: block;
 }
 
-.archetype-summary-copy small {
-  margin-bottom: 2px;
-  color: var(--muted);
-  font-size: 0.72rem;
-  font-weight: 760;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
 .archetype-summary-copy strong {
   font-family: Georgia, "Times New Roman", serif;
   font-size: 1.12rem;
+}
+
+.archetype-summary-copy small {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 760;
+  letter-spacing: 0.02em;
 }
 
 .archetype-expand {
