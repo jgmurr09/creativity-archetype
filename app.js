@@ -582,8 +582,7 @@ function renderIntro() {
           <span class="meta-pill">About 60 to 90 seconds</span>
           <span class="meta-pill">No wrong answers</span>
         </div>
-        <button class="primary-button" id="startButton" type="button">
-          Show me my type <span aria-hidden="true">→</span>
+        <button class="primary-button" id="startButton" type="button">Discover Your Creativity Archetype <span aria-hidden="true">→</span>
         </button>
         <p class="intro-note">
           Pick what feels more like you most of the time. Do not choose what your title expects or what sounds most impressive. This is a reflection tool, not a personality diagnosis or performance rating.
@@ -982,9 +981,21 @@ function renderResults() {
 
   app.innerHTML = `
     <section class="screen results-layout" aria-labelledby="resultTitle">
-      <aside class="result-snapshot-note" aria-label="Result context">
-        <strong>A snapshot, not a verdict.</strong> This result is subjective and reflects where your answers land in this moment. It can shift with your context, role, team, and experience.
-      </aside>
+      <div class="result-toolbar">
+        <aside class="result-snapshot-note" aria-label="Result context">
+          <strong>A snapshot, not a verdict.</strong> This result is subjective and reflects where your answers land in this moment. It can shift with your context, role, team, and experience.
+        </aside>
+        <button
+          class="ghost-button refresh-button"
+          id="refreshButton"
+          type="button"
+          aria-label="Start over and clear all answers"
+          title="Start over and clear all answers"
+        >
+          <span class="refresh-icon" aria-hidden="true">↻</span>
+          <span>Start over</span>
+        </button>
+      </div>
       <article class="result-hero" style="--archetype-color: ${primary.color}">
         <div>
           <p class="result-label">Your creativity archetype</p>
@@ -1222,6 +1233,7 @@ function bindResultInteractions() {
   document.querySelector("#downloadButton").addEventListener("click", downloadResultCard);
   document.querySelector("#editAnswersButton").addEventListener("click", editAnswers);
   document.querySelector("#editAnswersBottomButton").addEventListener("click", editAnswers);
+  document.querySelector("#refreshButton").addEventListener("click", resetAssessment);
   document.querySelector("#retakeButton").addEventListener("click", resetAssessment);
 }
 
