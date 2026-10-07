@@ -63,7 +63,7 @@ const archetypes = {
   empathizer: {
     official: "The Empathizer",
     playful: "The Human Radar",
-    glyph: "ðŸ«¶",
+    glyph: "🫶",
     color: "#ffcb66",
     modes: ["explore", "align"],
     description:
@@ -82,7 +82,7 @@ const archetypes = {
   researcher: {
     official: "The Researcher",
     playful: "The Evidence Hunter",
-    glyph: "ðŸ”Ž",
+    glyph: "🔎",
     color: "#80d7bd",
     modes: ["explore", "validate"],
     description:
@@ -101,7 +101,7 @@ const archetypes = {
   synthesizer: {
     official: "The Synthesizer",
     playful: "The Dot Connector",
-    glyph: "ðŸ§©",
+    glyph: "🧩",
     color: "#8c63d8",
     modes: ["interpret", "explore"],
     description:
@@ -120,7 +120,7 @@ const archetypes = {
   ideaGenerator: {
     official: "The Idea Generator",
     playful: "The Possibility Machine",
-    glyph: "ðŸ’¡",
+    glyph: "💡",
     color: "#ffcb66",
     modes: ["imagine", "explore"],
     description:
@@ -139,7 +139,7 @@ const archetypes = {
   prototyper: {
     official: "The Prototyper",
     playful: "The Make-It-Real Person",
-    glyph: "ðŸ› ï¸",
+    glyph: "🛠️",
     color: "#ef8e77",
     modes: ["make", "imagine"],
     description:
@@ -158,7 +158,7 @@ const archetypes = {
   artist: {
     official: "The Artist",
     playful: "The Craft Alchemist",
-    glyph: "ðŸŽ¨",
+    glyph: "🎨",
     color: "#71b8dc",
     modes: ["make", "imagine"],
     description:
@@ -177,7 +177,7 @@ const archetypes = {
   tester: {
     official: "The Tester",
     playful: "The Friendly Skeptic",
-    glyph: "ðŸ§ª",
+    glyph: "🧪",
     color: "#71b8dc",
     modes: ["validate", "interpret"],
     description:
@@ -196,7 +196,7 @@ const archetypes = {
   facilitator: {
     official: "The Facilitator",
     playful: "The Room Conductor",
-    glyph: "ðŸŽ›ï¸",
+    glyph: "🎛️",
     color: "#b8dc8a",
     modes: ["align", "interpret"],
     description:
@@ -215,7 +215,7 @@ const archetypes = {
   leader: {
     official: "The Leader",
     playful: "The North Star",
-    glyph: "ðŸ§­",
+    glyph: "🧭",
     color: "#ef8e77",
     modes: ["align", "make"],
     description:
@@ -234,7 +234,7 @@ const archetypes = {
   documenter: {
     official: "The Documenter",
     playful: "The Keeper of Receipts",
-    glyph: "ðŸ—‚ï¸",
+    glyph: "🗂️",
     color: "#8c63d8",
     modes: ["interpret", "validate"],
     description:
@@ -307,7 +307,7 @@ const questions = [
     options: [
       {
         word: "People",
-        symbol: "â—‰",
+        symbol: "◉",
         archetype: "empathizer",
         secondary: "facilitator",
         skills: ["empathy", "socialAwareness"],
@@ -315,7 +315,7 @@ const questions = [
       },
       {
         word: "Patterns",
-        symbol: "âŒ",
+        symbol: "⌁",
         archetype: "synthesizer",
         secondary: "researcher",
         skills: ["ambiguity", "clearCommunication"],
@@ -329,7 +329,7 @@ const questions = [
     options: [
       {
         word: "Evidence",
-        symbol: "âŒ•",
+        symbol: "⌕",
         archetype: "researcher",
         secondary: "tester",
         skills: ["proactiveProblemSolving", "ownership"],
@@ -337,7 +337,7 @@ const questions = [
       },
       {
         word: "Possibility",
-        symbol: "âœ¦",
+        symbol: "✦",
         archetype: "ideaGenerator",
         secondary: "artist",
         skills: ["creativity", "ambiguity"],
@@ -351,7 +351,7 @@ const questions = [
     options: [
       {
         word: "Prototype",
-        symbol: "â–±",
+        symbol: "▱",
         archetype: "prototyper",
         secondary: "leader",
         skills: ["proactiveProblemSolving", "adaptability"],
@@ -359,7 +359,7 @@ const questions = [
       },
       {
         word: "Refine",
-        symbol: "âœŽ",
+        symbol: "✎",
         archetype: "artist",
         secondary: "documenter",
         skills: ["creativity", "clearCommunication"],
@@ -373,7 +373,7 @@ const questions = [
     options: [
       {
         word: "Challenge",
-        symbol: "â–³",
+        symbol: "△",
         archetype: "tester",
         secondary: "researcher",
         skills: ["givingFeedback", "proactiveProblemSolving"],
@@ -381,7 +381,7 @@ const questions = [
       },
       {
         word: "Alignment",
-        symbol: "â—Ž",
+        symbol: "◎",
         archetype: "facilitator",
         secondary: "empathizer",
         skills: ["collaboration", "socialAwareness"],
@@ -395,7 +395,7 @@ const questions = [
     options: [
       {
         word: "Direction",
-        symbol: "â†—",
+        symbol: "↗",
         archetype: "leader",
         secondary: "facilitator",
         skills: ["ownership", "clearCommunication"],
@@ -403,7 +403,7 @@ const questions = [
       },
       {
         word: "Continuity",
-        symbol: "âˆž",
+        symbol: "∞",
         archetype: "documenter",
         secondary: "synthesizer",
         skills: ["humbleHustle", "ownership"],
@@ -417,7 +417,7 @@ const questions = [
     options: [
       {
         word: "Listen",
-        symbol: "â—¡",
+        symbol: "◡",
         archetype: "empathizer",
         secondary: "synthesizer",
         skills: ["empathy", "receivingFeedback"],
@@ -425,7 +425,7 @@ const questions = [
       },
       {
         word: "Investigate",
-        symbol: "âŒ–",
+        symbol: "⌖",
         archetype: "researcher",
         secondary: "tester",
         skills: ["proactiveProblemSolving", "ambiguity"],
@@ -434,12 +434,12 @@ const questions = [
     ],
   },
   {
-    stem: "Momentum begins withâ€¦",
+    stem: "Momentum begins with…",
     kicker: "Energy",
     options: [
       {
         word: "Imagination",
-        symbol: "â˜„",
+        symbol: "☄",
         archetype: "ideaGenerator",
         secondary: "artist",
         skills: ["creativity", "adaptability"],
@@ -447,7 +447,7 @@ const questions = [
       },
       {
         word: "Action",
-        symbol: "â–¶",
+        symbol: "▶",
         archetype: "prototyper",
         secondary: "leader",
         skills: ["ownership", "humbleHustle"],
@@ -456,12 +456,12 @@ const questions = [
     ],
   },
   {
-    stem: "Clarity comes fromâ€¦",
+    stem: "Clarity comes from…",
     kicker: "Sensemaking",
     options: [
       {
         word: "Framing",
-        symbol: "â–£",
+        symbol: "▣",
         archetype: "synthesizer",
         secondary: "ideaGenerator",
         skills: ["clearCommunication", "ambiguity"],
@@ -469,7 +469,7 @@ const questions = [
       },
       {
         word: "Recording",
-        symbol: "â‰¡",
+        symbol: "≡",
         archetype: "documenter",
         secondary: "empathizer",
         skills: ["clearCommunication", "ownership"],
@@ -478,12 +478,12 @@ const questions = [
     ],
   },
   {
-    stem: "I care most aboutâ€¦",
+    stem: "I care most about…",
     kicker: "Standard",
     options: [
       {
         word: "Meaning",
-        symbol: "â™¡",
+        symbol: "♡",
         archetype: "artist",
         secondary: "ideaGenerator",
         skills: ["empathy", "creativity"],
@@ -491,7 +491,7 @@ const questions = [
       },
       {
         word: "Rigor",
-        symbol: "âœ“",
+        symbol: "✓",
         archetype: "tester",
         secondary: "documenter",
         skills: ["givingFeedback", "resilience"],
@@ -505,7 +505,7 @@ const questions = [
     options: [
       {
         word: "Adapt",
-        symbol: "â†",
+        symbol: "↝",
         archetype: "facilitator",
         secondary: "prototyper",
         skills: ["adaptability", "socialAwareness"],
@@ -513,7 +513,7 @@ const questions = [
       },
       {
         word: "Decide",
-        symbol: "â—†",
+        symbol: "◆",
         archetype: "leader",
         secondary: "prototyper",
         skills: ["ownership", "resilience"],
@@ -583,16 +583,16 @@ function renderIntro() {
           <span class="meta-pill">No wrong answers</span>
         </div>
         <button class="primary-button" id="startButton" type="button">
-          Discover My Creativity Archetype <span aria-hidden="true">â†’</span>
+          Discover My Creativity Archetype <span aria-hidden="true">→</span>
         </button>
         <p class="intro-note">
           Pick what feels more like you most of the time. Do not choose what your title expects or what sounds most impressive. This is a reflection tool, not a personality diagnosis or performance rating.
         </p>
       </div>
       <div class="intro-art" aria-hidden="true">
-        <div class="poster"><span class="doodle">ðŸ§©</span><span class="poster-word">Connect the dots</span></div>
-        <div class="poster"><span class="doodle">ðŸ«¶</span><span class="poster-word">Read the room</span></div>
-        <div class="poster"><span class="doodle">ðŸ› ï¸</span><span class="poster-word">Make it real</span></div>
+        <div class="poster"><span class="doodle">🧩</span><span class="poster-word">Connect the dots</span></div>
+        <div class="poster"><span class="doodle">🫶</span><span class="poster-word">Read the room</span></div>
+        <div class="poster"><span class="doodle">🛠️</span><span class="poster-word">Make it real</span></div>
       </div>
     </section>
   `;
@@ -669,13 +669,13 @@ function renderQuiz() {
         <div class="quiz-nav">
           ${
             state.currentQuestion > 0
-              ? '<button class="ghost-button" id="backButton" type="button">â† Previous</button>'
+              ? '<button class="ghost-button" id="backButton" type="button">← Previous</button>'
               : ""
           }
           ${
             state.editingAnswers && selectedIndex !== undefined
               ? `<button class="secondary-button" id="nextButton" type="button">${
-                  state.currentQuestion === questions.length - 1 ? "Update result" : "Next choice â†’"
+                  state.currentQuestion === questions.length - 1 ? "Update result" : "Next choice →"
                 }</button>`
               : ""
           }
@@ -683,7 +683,7 @@ function renderQuiz() {
         ${
           state.editingAnswers
             ? '<button class="ghost-button" id="saveAndReturnButton" type="button">Save and return to results</button>'
-            : '<p class="microcopy">Use â† / â†’ or A / B</p>'
+            : '<p class="microcopy">Use ← / → or A / B</p>'
         }
       </div>
     </section>
@@ -959,7 +959,7 @@ function renderArchetypeLibrary(currentKey) {
 function renderReveal() {
   app.innerHTML = `
     <section class="screen reveal-card" aria-label="Calculating result">
-      <div class="reveal-orbit" aria-hidden="true"><span>âœ¦</span></div>
+      <div class="reveal-orbit" aria-hidden="true"><span>✦</span></div>
       <h2>Connecting your dots...</h2>
       <p>Calculating your preferred ratio of questions, craft, momentum, and constructive skepticism.</p>
     </section>
@@ -993,7 +993,7 @@ function renderResults() {
           aria-label="Start over and clear all answers"
           title="Start over and clear all answers"
         >
-          <span class="refresh-icon" aria-hidden="true">â†»</span>
+          <span class="refresh-icon" aria-hidden="true">↻</span>
           <span>Start over</span>
         </button>
       </div>
@@ -1014,7 +1014,7 @@ function renderResults() {
           </div>
         </div>
         <div class="result-portrait">
-          <img src="${archetypeImages[result.primaryKey]}" alt="${stripLeadingThe(primary.official)} â€” ${primary.playful} archetype illustration" />
+          <img src="${archetypeImages[result.primaryKey]}" alt="${stripLeadingThe(primary.official)} — ${primary.playful} archetype illustration" />
         </div>
       </article>
 
@@ -1594,10 +1594,10 @@ function wrapTextWithLimit(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
   const visible = lines.slice(0, maxLines);
   if (lines.length > maxLines) {
     let finalLine = visible[maxLines - 1];
-    while (ctx.measureText(`${finalLine}â€¦`).width > maxWidth && finalLine.includes(" ")) {
+    while (ctx.measureText(`${finalLine}…`).width > maxWidth && finalLine.includes(" ")) {
       finalLine = finalLine.slice(0, finalLine.lastIndexOf(" "));
     }
-    visible[maxLines - 1] = `${finalLine}â€¦`;
+    visible[maxLines - 1] = `${finalLine}…`;
   }
 
   visible.forEach((lineText, index) => {
